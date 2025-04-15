@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+
+# 🛡️ Ensure standard tools are in PATH
+export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+
+# 📁 Base directory for dotfiles
+DOTFILES_DIR="$HOME/hpc-dotfiles"
+TRACK_FILE="$DOTFILES_DIR/dotfiles.json"
+
+# 🔧 Dependency check
+for cmd in jq git mv ln basename; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "❌ Required command not found: $cmd"
+    exit 1
+  fi
+done
+
+# 📝 Create tracking file if not present
+[[ ! -f "$TRACK_FILE" ]] && echo "[]" > "$TRACK_FILE"
+
+# 📖 Load tracked dotfiles
+load_dotfiles() {
+  jq -r '.[]' "$TRACK_FILE"
+}
+
+# ➕ Add dotfile to JSON
+add_dotfile() {
+  jq --arg file "$1" '. += [$file]' "$TRACK_FILE" > "$TRACK_FILE.tmp" && mv "$TRACK_FILE.tmp" "$TRACK_FILE"
+}
+
+# ➖ Remove dotfile from JSON
+remove_dotfile() {
+  jq --arg file "$1" 'map(select(. != $file))' "$TRACK_FILE" > "$TRACK_FILE.tmp" && mv "$TRACK_FILE.tmp" "$TRACK_FILE"
+}
+
+# 📋 Menu UI
+show_menu() {
+  echo ""
+  echo "📁 HPC Dotfile Manager"
+  echo "======================="
+  echo "1. ➕  Add a dotfile"
+  echo "2. 🔗  Restore all dotfiles"
+  echo "3. 🗑️  Remove a dotfile"
+  echo "4. 📋  List managed dotfiles"
+  echo "5. ❌  Exit"
+  echo ""
+  read -r -p "Choose an option: " choice
+  echo ""
+}
+
+# 🧠 Main Menu Logic
+if [[ $# -eq 0 ]]; then
+  show_menu
+
+  case "$choice" in
+    1)
+      read -r -p "Enter full path of dotfile to add: " path
+      path_expanded=$(eval echo "$path")
+      filename=$(basename "$path_expanded")
+      dest="$DOTFILES_DIR/$filename"
+
+      if [[ ! -f "$path_expanded" ]]; then
+        echo "❌ File does not exist: $path_expanded"
+        exit 1
+      fi
+
+      if [[ -L "$path_expanded" ]]; then
+        echo "⚠️ Already a symlink: $path_expanded"
+        exit 1
+      fi
+
+      echo "📦 Moving $path_expanded → $dest"
+      mv "$path_expanded" "$dest"
+      ln -s "$dest" "$path_expanded"
+      echo "🔗 Symlink created: $path_expanded → $dest"
+
+      add_dotfile "$filename"
+      cd "$DOTFILES_DIR" && git add "$filename" && git commit -m "feat: track $filename"
+      echo "✅ Dotfile added and committed."
+      ;;
+    2)
+      for file in $(load_dotfiles); do
+        src="$DOTFILES_DIR/$file"
+        dest="$HOME/.$file"
+        if [[ -e "$dest" && ! -L "$dest" ]]; then
+          echo "📦 Backing up $dest → $dest.backup"
+          mv "$dest" "$dest.backup"
+        fi
+        if [[ ! -L "$dest" ]]; then
+          ln -s "$src" "$dest"
+          echo "🔗 Restored: $dest → $src"
+        else
+          echo "ℹ️ $dest already linked."
+        fi
+      done
+      ;;
+    3)
+      echo "📋 Tracked files:"
+      i=1
+      mapfile -t filelist < <(load_dotfiles)
+      for f in "${filelist[@]}"; do
+        echo "$i. $f"
+        ((i++))
+      done
+      read -r -p "Enter the number to remove: " delnum
+      index=$((delnum - 1))
+      rmfile="${filelist[$index]}"
+      [[ -z "$rmfile" ]] && echo "❌ Invalid selection." && exit 1
+      target="$HOME/.$rmfile"
+      [[ -L "$target" ]] && rm "$target" && echo "🗑️ Removed symlink: $target"
+      remove_dotfile "$rmfile"
+      cd "$DOTFILES_DIR" && git rm "$rmfile" && git commit -m "chore: untrack $rmfile"
+      echo "✅ Removed from tracking: $rmfile"
+      ;;
+    4)
+      echo "📋 Managed dotfiles:"
+      load_dotfiles
+      ;;
+    5)
+      echo "👋 Exiting."
+      exit 0
+      ;;
+    *)
+      echo "❌ Invalid option"
+      exit 1
+      ;;
+  esac
+  exit 0
+fi
+

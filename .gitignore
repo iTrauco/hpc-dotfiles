@@ -1,0 +1,75 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔒 General system + Debian
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.bak
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+__MACOSX/
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🐍 Python
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+*.egg-info/
+build/
+dist/
+
+# Pipenv / Poetry / Venvs
+pip-wheel-metadata/
+*.venv
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🧠 Dotfiles and secrets
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+secrets/
+private/
+*.key
+*.pem
+*.enc
+*.gpg
+*.asc
+.ssh/
+.gnupg/
+.npmrc
+.netrc
+.env
+.env.*
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🧑‍💻 Editors & IDEs
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.vscode/
+.idea/
+*.sublime*
+*.swp
+*.swo
+*~*
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🚀 HPC CLI cache
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+dotfiles.json.bak
+.cache/
+temp/
+
