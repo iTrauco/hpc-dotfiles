@@ -122,10 +122,34 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 # export PATH="$HOME/miniconda/bin:$PATH"  # commented out by conda initialize
+
+
+# ─────────────────────────────────────────────
+# 🚀 Custom Aliases & Environment Setup
+# ─────────────────────────────────────────────
+
+# 📁 Show directory structure while ignoring clutter (e.g. venv, node_modules, .git, etc)
 alias structure="tree -I \"venv*|__pycache__|*.pyc|.git|*.egg-info|env|*.env|dist|*node*|build\" ."
+
+# 📦 Archive all Git branches except 'develop' using a custom script
 alias git-archive="~/scripts/git/archive-branches.sh"
+
+# 🧠 HPC Dotfiles manager: handles symlinks and dotfile tracking
 alias hpc="~/hpc-dotfiles/scripts/hpc"
 
+# ─────────────────────────────────────────────
+# 📝 Editor Configuration
+# ─────────────────────────────────────────────
 
+# 🧙 Set Vim as the default terminal editor
+export EDITOR=vim
+export VISUAL=vim
 
+# 🪓 Kill nano — make 'nano' run Vim instead
+alias nano='vim'
+
+# Simple alias to launch a bash terminal
+alias gobash="exec bash"
+# And to get back to zsh
+alias gozsh="exec zsh"
 
