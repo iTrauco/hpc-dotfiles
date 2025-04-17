@@ -137,6 +137,9 @@ alias git-archive="~/scripts/git/archive-branches.sh"
 # 🧠 HPC Dotfiles manager: handles symlinks and dotfile tracking
 alias hpc="~/hpc-dotfiles/scripts/hpc"
 
+alias vfile="~/scripts/git/version_tracker.sh"
+
+alias zinit="source ~/.zshrc"
 # ─────────────────────────────────────────────
 # 📝 Editor Configuration
 # ─────────────────────────────────────────────
